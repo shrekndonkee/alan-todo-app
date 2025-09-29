@@ -1,70 +1,92 @@
-/* To-Do App Container */
-#app {
-  max-width: 900px; /* smaller for focus */
-  margin: 0 auto;
-  padding: 3rem;
-  text-align: center;
-  background: linear-gradient(145deg, #1f1f1f, #2c2c2c);
-  border-radius: 1rem;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+@import "tailwindcss";
+
+
+/* Import Roboto font */
+
+:root {
+  font-family: 'Roboto', system-ui, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: #111827; /* almost black text for readability */
+  background-color: #f9fafb; /* soft light gray background */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Headings */
-h1 {
-  font-size: 2.5em;
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(to right, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* To-do list items */
-.todo-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #2d2d2d;
-  padding: 0.8rem 1.2rem;
-  margin: 0.5rem 0;
-  border-radius: 0.6rem;
-  transition: transform 0.2s, background 0.3s;
-}
-.todo-item:hover {
-  transform: translateY(-2px);
-  background: #3a3a3a;
-}
-
-/* Input box */
-input[type="text"] {
-  padding: 0.6rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid #444;
-  background: #1e1e1e;
-  color: #fff;
-  width: 70%;
-  margin-right: 0.8rem;
-  transition: border-color 0.3s;
-}
-input[type="text"]:focus {
-  outline: none;
-  border-color: #60a5fa;
-}
-
-/* Buttons */
-button {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.95em;
+a {
   font-weight: 500;
-  font-family: inherit;
-  background: linear-gradient(to right, #60a5fa, #a78bfa);
-  border: none;
-  color: white;
-  cursor: pointer;
-  transition: transform 0.2s, opacity 0.3s;
+  color: #2563eb; /* blue-600 */
+  text-decoration: none;
 }
-button:hover {
-  transform: translateY(-1px);
-  opacity: 0.9;
+a:hover {
+  color: #1d4ed8; /* blue-700 */
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3em;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #e11d48; /* bright rose red for "To-Do" */
+  margin-bottom: 1rem;
+}
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #2563ebaa);
+}
+.logo.vanilla:hover {
+  filter: drop-shadow(0 0 2em #9333ea); /* purple */
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #6b7280; /* gray-500 */
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f9fafb; /* white text */
+    background-color: #111827; /* dark background */
+  }
+  h1 {
+    color: #fbbf24; /* amber for "To-Do" in dark mode */
+  }
+  a:hover {
+    color: #93c5fd; /* lighter blue */
+  }
+  button {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
 }
