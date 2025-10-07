@@ -1,5 +1,7 @@
+
 import type { Todo } from './todoModel'
-import { getAllTodos, getAllCategories, deleteTodo, editTodo } from './todoModel'
+import { getAllTodos, getAllCategories, deleteTodo, editTodo, clearCompletedTodos } from './todoModel'
+import { showAlertModal, showConfirmModal, showFormModal } from './modalService'
 
 /**
  * Formats a date for display
@@ -91,8 +93,12 @@ function createTodoElement(todo: Todo): HTMLElement {
   const editBtn = todoDiv.querySelector('.edit-btn') as HTMLButtonElement
   const deleteBtn = todoDiv.querySelector('.delete-btn') as HTMLButtonElement
 
-  editBtn.addEventListener('click', () => handleEditTodo(todo.id))
-  deleteBtn.addEventListener('click', () => handleDeleteTodo(todo.id))
+  editBtn.addEventListener('click', () => {
+    void handleEditTodo(todo.id)
+  })
+  deleteBtn.addEventListener('click', () => {
+    void handleDeleteTodo(todo.id)
+  })
 
   return todoDiv
 }
@@ -100,38 +106,183 @@ function createTodoElement(todo: Todo): HTMLElement {
 /**
  * Handles editing a todo item
  */
-function handleEditTodo(todoId: string): void {
+async function handleEditTodo(todoId: string): Promise<void> {
   const todos = getAllTodos()
   const todo = todos.find(t => t.id === todoId)
 
   if (!todo) {
-    alert('Todo not found')
+    await showAlertModal({
+      title: 'Todo not found',
+      message: 'The selected todo could not be located. It may have already been removed.'
+    })
     return
   }
 
-  // Simple edit dialog - in a real app, you'd want a proper modal
-  const newName = prompt('Enter new name:', todo.name)
-  if (newName && newName.trim()) {
-    const newStatus = prompt('Enter new status (pending/in-progress/completed):', todo.status) as Todo['status']
-    if (newStatus && ['pending', 'in-progress', 'completed'].includes(newStatus)) {
-      editTodo(todoId, { name: newName.trim(), status: newStatus })
-      renderTodoList() // Re-render the list
-    }
+  const categories = getAllCategories()
+  if (categories.length === 0) {
+    await showAlertModal({
+      title: 'No categories available',
+      message: 'Add a category before editing todos.'
+    })
+    return
   }
+
+  const formValues = await showFormModal({
+    title: 'Edit todo',
+    message: 'Update the details of your todo.',
+    confirmLabel: 'Save changes',
+    fields: [
+      {
+        name: 'name',
+        label: 'Todo name',
+        type: 'text',
+        required: true,
+        initialValue: todo.name
+      },
+      {
+        name: 'status',
+        label: 'Status',
+        type: 'select',
+        required: true,
+        options: [
+          { label: 'Pending', value: 'pending' },
+          { label: 'In progress', value: 'in-progress' },
+          { label: 'Completed', value: 'completed' }
+        ],
+        initialValue: todo.status
+      },
+      {
+        name: 'categoryId',
+        label: 'Category',
+        type: 'select',
+        required: true,
+        options: categories.map(category => ({
+          label: category.name,
+          value: category.id
+        })),
+        initialValue: todo.categoryId
+      },
+      {
+        name: 'dueDate',
+        label: 'Due date',
+        type: 'date',
+        required: true,
+        initialValue: todo.dueDate.toISOString().split('T')[0]
+      }
+    ]
+  })
+
+  if (!formValues) return
+
+  const name = formValues.name.trim()
+  if (!name) {
+    await showAlertModal({
+      title: 'Todo name required',
+      message: 'Please provide a name before saving your changes.'
+    })
+    return
+  }
+
+  const status = formValues.status as Todo['status']
+  if (!['pending', 'in-progress', 'completed'].includes(status)) {
+    await showAlertModal({
+      title: 'Invalid status',
+      message: 'Choose a valid status for this todo.'
+    })
+    return
+  }
+
+  const dueDate = new Date(formValues.dueDate)
+  if (Number.isNaN(dueDate.getTime())) {
+    await showAlertModal({
+      title: 'Invalid due date',
+      message: 'Please select a valid due date.'
+    })
+    return
+  }
+
+  editTodo(todoId, {
+    name,
+    status,
+    categoryId: formValues.categoryId,
+    dueDate
+  })
+  renderTodoList()
+
+  await showAlertModal({
+    title: 'Todo updated',
+    message: `Todo "${name}" was updated successfully.`
+  })
 }
 
 /**
  * Handles deleting a todo item
  */
-function handleDeleteTodo(todoId: string): void {
-  if (confirm('Are you sure you want to delete this todo?')) {
-    const success = deleteTodo(todoId)
-    if (success) {
-      renderTodoList() // Re-render the list
-    } else {
-      alert('Todo not found')
-    }
+async function handleDeleteTodo(todoId: string): Promise<void> {
+  const todos = getAllTodos()
+  const todo = todos.find(t => t.id === todoId)
+
+  if (!todo) {
+    await showAlertModal({
+      title: 'Todo not found',
+      message: 'The todo you tried to delete was not found.'
+    })
+    return
   }
+
+  const confirmed = await showConfirmModal({
+    title: 'Delete todo',
+    message: `Are you sure you want to delete "${todo.name}"?`,
+    confirmLabel: 'Delete',
+    cancelLabel: 'Cancel',
+    variant: 'danger'
+  })
+
+  if (!confirmed) return
+
+  const success = deleteTodo(todoId)
+  if (success) {
+    renderTodoList()
+    await showAlertModal({
+      title: 'Todo deleted',
+      message: `Todo "${todo.name}" was deleted.`
+    })
+  } else {
+    await showAlertModal({
+      title: 'Todo not found',
+      message: 'The todo could not be deleted because it no longer exists.'
+    })
+  }
+}
+
+/**
+ * Handles clearing all completed todos
+ */
+async function handleClearCompleted(): Promise<void> {
+  const todos = getAllTodos()
+  const completedCount = todos.filter(t => t.status === 'completed').length
+
+  if (completedCount === 0) {
+    return
+  }
+
+  const confirmed = await showConfirmModal({
+    title: 'Clear completed todos',
+    message: `Are you sure you want to remove ${completedCount} completed todo${completedCount > 1 ? 's' : ''}?`,
+    confirmLabel: 'Clear',
+    cancelLabel: 'Cancel',
+    variant: 'danger'
+  })
+
+  if (!confirmed) return
+
+  const deletedCount = clearCompletedTodos()
+  renderTodoList()
+
+  await showAlertModal({
+    title: 'Completed todos cleared',
+    message: `${deletedCount} completed todo${deletedCount > 1 ? 's' : ''} removed successfully.`
+  })
 }
 
 /**
@@ -145,6 +296,9 @@ export function renderTodoList(): void {
     console.error('Todo list container not found')
     return
   }
+
+  // Update the header with Clear Completed button
+  updateTodoListHeader()
 
   // Clear existing content
   todoListContainer.innerHTML = ''
@@ -167,6 +321,70 @@ export function renderTodoList(): void {
     const todoElement = createTodoElement(todo)
     todoListContainer.appendChild(todoElement)
   })
+}
+
+/**
+ * Updates the todo list header with the Clear Completed button
+ */
+function updateTodoListHeader(): void {
+  const headerContainer = document.querySelector('.lg\\:col-span-2 .bg-white h2')
+  
+  if (!headerContainer || !headerContainer.parentElement) {
+    return
+  }
+
+  const todos = getAllTodos()
+  const hasCompletedTodos = todos.some(t => t.status === 'completed')
+
+  // Check if button already exists
+  let existingButton = headerContainer.parentElement.querySelector('#clearCompletedBtn') as HTMLButtonElement
+
+  if (hasCompletedTodos) {
+    if (!existingButton) {
+      // Create the button container if it doesn't exist
+      const buttonContainer = document.createElement('div')
+      buttonContainer.className = 'flex items-center justify-between mb-4'
+      
+      // Move the h2 into the container
+      const h2 = headerContainer.parentElement.querySelector('h2')
+      if (h2) {
+        h2.className = 'text-xl font-semibold text-gray-900'
+        buttonContainer.appendChild(h2)
+        
+        // Create the Clear Completed button
+        const clearButton = document.createElement('button')
+        clearButton.id = 'clearCompletedBtn'
+        clearButton.type = 'button'
+        clearButton.className = 'bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200'
+        clearButton.textContent = 'Clear Completed'
+        clearButton.addEventListener('click', () => {
+          void handleClearCompleted()
+        })
+        
+        buttonContainer.appendChild(clearButton)
+        
+        // Insert the container before the todo-list div
+        const todoListDiv = document.getElementById('todo-list')
+        if (todoListDiv) {
+          todoListDiv.parentElement?.insertBefore(buttonContainer, todoListDiv)
+        }
+      }
+    }
+  } else {
+    // Remove the button if no completed todos
+    if (existingButton) {
+      const buttonContainer = existingButton.parentElement
+      const h2 = buttonContainer?.querySelector('h2')
+      
+      if (buttonContainer && h2 && buttonContainer.parentElement) {
+        // Move h2 back out of the container
+        buttonContainer.parentElement.insertBefore(h2, buttonContainer)
+        h2.className = 'text-xl font-semibold text-gray-900 mb-4'
+        // Remove the button container
+        buttonContainer.remove()
+      }
+    }
+  }
 }
 
 /**
