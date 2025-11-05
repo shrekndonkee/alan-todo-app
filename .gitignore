@@ -15,6 +15,7 @@ dist-ssr
 *.db
 *.db-journal
 dist-server/
+.env
 
 # Editor directories and files
 .vscode/*
