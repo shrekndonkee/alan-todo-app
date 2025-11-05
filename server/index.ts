@@ -34,3 +34,13 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`)
   console.log(`📋 API endpoints available at http://localhost:${PORT}/api`)
 })
+
+
+
+app.get('/', (_req, res) => {
+  res.send('API is running. Try /api/todos or /api/categories');
+});
+
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, time: new Date().toISOString() });
+});

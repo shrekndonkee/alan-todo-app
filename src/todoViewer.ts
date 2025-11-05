@@ -109,24 +109,24 @@ async function createTodoElement(todo: Todo): Promise<HTMLElement> {
  * Handles editing a todo item
  */
 async function handleEditTodo(todoId: string): Promise<void> {
-  const todos = await getAllTodos()
-  const todo = todos.find(t => t.id === todoId)
+  const todos = await getAllTodos();
+  const todo = todos.find(t => t.id === todoId);
 
   if (!todo) {
     await showAlertModal({
       title: 'Todo not found',
       message: 'The selected todo could not be located. It may have already been removed.'
-    })
-    return
+    });
+    return;
   }
 
-  const categories = await getAllCategories()
+  const categories = await getAllCategories();
   if (categories.length === 0) {
     await showAlertModal({
       title: 'No categories available',
       message: 'Add a category before editing todos.'
-    })
-    return
+    });
+    return;
   }
 
   const formValues = await showFormModal({
@@ -169,53 +169,56 @@ async function handleEditTodo(todoId: string): Promise<void> {
         label: 'Due date',
         type: 'date',
         required: true,
-        initialValue: todo.dueDate.toISOString().split('T')[0]
+        // FIX: ensure we have a Date before calling toISOString
+        initialValue: new Date((todo as any).dueDate).toISOString().split('T')[0]
       }
     ]
-  })
+  });
 
-  if (!formValues) return
+  if (!formValues) return;
 
-  const name = formValues.name.trim()
+  const name = formValues.name.trim();
   if (!name) {
     await showAlertModal({
       title: 'Todo name required',
       message: 'Please provide a name before saving your changes.'
-    })
-    return
+    });
+    return;
   }
 
-  const status = formValues.status as Todo['status']
+  const status = formValues.status as Todo['status'];
   if (!['pending', 'in-progress', 'completed'].includes(status)) {
     await showAlertModal({
       title: 'Invalid status',
       message: 'Choose a valid status for this todo.'
-    })
-    return
+    });
+    return;
   }
 
-  const dueDate = new Date(formValues.dueDate)
+  const dueDate = new Date(formValues.dueDate);
   if (Number.isNaN(dueDate.getTime())) {
     await showAlertModal({
       title: 'Invalid due date',
       message: 'Please select a valid due date.'
-    })
-    return
+    });
+    return;
   }
 
-  editTodo(todoId, {
+  await editTodo(todoId, {
     name,
     status,
     categoryId: formValues.categoryId,
     dueDate
-  })
-  renderTodoList()
+  });
+
+  await renderTodoList();
 
   await showAlertModal({
     title: 'Todo updated',
     message: `Todo "${name}" was updated successfully.`
-  })
+  });
 }
+
 
 /**
  * Handles deleting a todo item
