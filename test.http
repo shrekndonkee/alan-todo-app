@@ -1,0 +1,35 @@
+### Get all categories
+GET http://localhost:3100/api/categories
+
+### Get all todos
+GET http://localhost:3100/api/todos
+
+### Create a new category
+POST http://localhost:3100/api/categories
+Content-Type: application/json
+
+{
+  "name": "Personal"
+}
+
+### Create a new todo
+POST http://localhost:3100/api/todos
+Content-Type: application/json
+
+{
+  "name": "Buy groceries",
+  "status": "pending",
+  "categoryId": "PASTE_CATEGORY_ID_HERE",
+  "dueDate": "2025-11-01"
+}
+
+### Update a todo
+PUT http://localhost:3100/api/todos/PASTE_TODO_ID_HERE
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### Delete a todo
+DELETE http://localhost:3100/api/todos/PASTE_TODO_ID_HERE
