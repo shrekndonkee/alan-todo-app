@@ -34,51 +34,75 @@ function initApp(): void {
 
 function setupUI(): void {
   document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-    <div class="min-h-screen bg-gray-50 py-8 px-4">
-      <div class="max-w-4xl mx-auto">
-        <header class="mb-8">
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">My Todo App</h1>
-          <p class="text-gray-600">Manage your tasks efficiently</p>
-        </header>
+    <div class="min-h-screen bg-[#f5f5f7] py-10 px-4">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Header -->
+    <header class="mb-10 text-center">
+      <h1 class="text-4xl font-semibold text-gray-900 tracking-tight">
+        My Todos
+      </h1>
+      <p class="text-gray-500 text-sm mt-1">
+        Stay organized with a clean, minimal workspace
+      </p>
+    </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Control Panel -->
-          <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow-md p-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">Actions</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Control Panel -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Actions</h2>
 
-              <div class="space-y-3">
-                <button type="button" id="addCategory" class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                  Add Category
-                </button>
+          <div class="space-y-4">
 
-                <button type="button" id="addTodo" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                  Add Todo
-                </button>
+            <!-- iOS Buttons -->
+            <button
+              type="button"
+              id="addCategory"
+              class="w-full py-3 rounded-2xl bg-gradient-to-b from-green-400 to-green-500 text-white font-semibold shadow-md active:scale-[0.98] transition">
+              Add Category
+            </button>
 
-                <button type="button" id="deleteCategory" class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                  Delete Category
-                </button>
+            <button
+              type="button"
+              id="addTodo"
+              class="w-full py-3 rounded-2xl bg-gradient-to-b from-blue-400 to-blue-500 text-white font-semibold shadow-md active:scale-[0.98] transition">
+              Add Todo
+            </button>
 
-                <select id="categoriesDropdown" class="w-full mt-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                  <option value="" disabled selected>Select a category</option>
-                </select>
-              </div>
-            </div>
-          </div>
+            <button
+              type="button"
+              id="deleteCategory"
+              class="w-full py-3 rounded-2xl bg-gradient-to-b from-red-400 to-red-500 text-white font-semibold shadow-md active:scale-[0.98] transition">
+              Delete Category
+            </button>
 
-          <!-- Todo List -->
-          <div class="lg:col-span-2">
-            <div class="bg-white rounded-lg shadow-md p-6">
-              <h2 class="text-xl font-semibold text-gray-900 mb-4">My Todos</h2>
-              <div id="todo-list" class="space-y-4">
-                <!-- Todos will be rendered here -->
-              </div>
-            </div>
+            <!-- iOS Select Menu -->
+            <select
+              id="categoriesDropdown"
+              class="w-full mt-4 py-3 px-4 rounded-2xl bg-gray-100 border border-gray-300 text-gray-700 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition">
+              <option value="" disabled selected>Select a category</option>
+            </select>
           </div>
         </div>
       </div>
+
+      <!-- Todo List -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">My Tasks</h2>
+
+          <div id="todo-list" class="space-y-4">
+            <!-- Todos generated here -->
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
+</div>
+
   `
 }
 
