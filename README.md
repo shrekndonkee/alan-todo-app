@@ -1,127 +1,150 @@
-📦 Setup
-Prerequisites
 
-Node.js (LTS)
 
-npm
+# 📦 Setup
 
-SQLite (bundled with Prisma)
+## **Prerequisites**
 
-Ollama installed and running
+* Node.js (LTS)
+* npm
+* SQLite (bundled with Prisma)
+* **Ollama** installed locally
+* Pull the model:
 
-Model llama3.2 pulled in Ollama:
-
+```bash
 ollama pull llama3.2
+```
 
-1️⃣ Install dependencies
+---
+
+## **1️⃣ Install dependencies**
+
+```bash
 npm install
+```
 
-2️⃣ Environment Variables
+---
 
-Create a .env file in the project root (same folder as package.json) with:
+## **2️⃣ Environment Variables**
 
+Create a `.env` file in your project root:
+
+```env
 # Database (Prisma uses this)
 DATABASE_URL="file:./dev.db"
 
 # Ollama AI configuration
 OLLAMA_BASE_URL=http://localhost:11434/v1
 OLLAMA_MODEL=llama3.2
+```
 
+> If your template had other `.env` variables, keep those as well.
 
-If your class template already had other env values, keep those too.
+---
 
-3️⃣ Database Setup
+## **3️⃣ Database Setup (if using Prisma migrations)**
 
-If your project is using Prisma migrations/seed:
-
+```bash
 npx prisma migrate dev
 npx prisma db seed
+```
 
-▶️ Running the App Locally
+---
 
-Open two terminals in the project folder.
+# ▶️ Running the App Locally
 
-Terminal 1 – Backend (API + AI Endpoint)
+You must run **two terminals**.
+
+---
+
+## **Terminal 1 — Backend (API + AI)**
+
+```bash
 npm run server
+```
 
+Backend runs at:
 
-This starts the Express server on:
-
+```
 http://localhost:3100/api
+```
 
-Backend endpoints used:
+### Endpoints used:
 
+```
 GET /api/todos
-
 GET /api/categories
-
-POST /api/ai/help → talks to Ollama
-
-Terminal 2 – Frontend (Vite Dev Server)
-npm run dev
-
-
-Then open the URL Vite prints (usually):
-
-http://localhost:5173
-
-🤖 AI Feature: “AI Help for a Task”
-
-This feature appears as the purple button in the Actions panel.
-
-How it works:
-
-Click “AI Help for a Task”
-
-A modal asks: “What task do you want help with?”
-
-You enter something like:
-“Study for my biology exam”
-
-When you submit:
-
-Frontend sends:
-
 POST /api/ai/help
-{ "task": "Study for my biology exam" }
+```
 
+---
 
-Backend calls your local Ollama model (llama3.2)
+## **Terminal 2 — Frontend (Vite)**
 
-Ollama returns a step-by-step helpful explanation
+```bash
+npm run dev
+```
 
-The modal displays the guidance
+Visit the URL Vite prints (usually):
 
-The AI does NOT modify todos or the database.
-It only provides helpful advice.
+```
+http://localhost:5173
+```
 
-🛠 Troubleshooting
-Ollama not running / model missing
+---
 
-Make sure Ollama is open.
-Run:
+# 🤖 AI Feature: “AI Help for a Task”
 
+1. Click **“AI Help for a Task”**
+2. Enter a task (e.g., “Study for my biology exam”)
+3. Frontend sends:
+
+```json
+POST /api/ai/help
+{
+  "task": "Study for my biology exam"
+}
+```
+
+4. Backend sends the prompt to **Ollama** using model `llama3.2`
+5. AI responds with a friendly explanation
+6. Modal displays the result
+
+> This feature **does not change the database**.
+> It only provides advice.
+
+---
+
+# 🛠 Troubleshooting
+
+### **Ollama not running / model not found**
+
+```bash
 ollama pull llama3.2
+```
 
-AI modal says “AI Error”
+Ensure the Ollama desktop app is open.
+
+---
+
+### **AI Error in modal**
 
 Check:
 
-OLLAMA_BASE_URL and OLLAMA_MODEL in .env
+* `.env` values
+* That backend terminal prints logs for `/api/ai/help`
+* That backend is running:
 
-That the backend terminal prints the request when calling /api/ai/help
-
-That npm run server is running
-
-API ERR_CONNECTION_REFUSED
-
-This means the backend isn’t running.
-
-✔️ Ensure:
-
+```bash
 npm run server
+```
 
+---
 
-is active.
+### **ERR_CONNECTION_REFUSED**
 
-✔️ Make sure nothing else is using port 3100.
+Backend is not running or incorrect port.
+
+Your backend must be running on **port 3100**.
+
+---
+
