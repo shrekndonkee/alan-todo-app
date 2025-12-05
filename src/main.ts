@@ -14,6 +14,7 @@ import {
   showFormModal,
   setupModalHost,
 } from "./modalService"
+import { getTaskHelpFromAI } from "./apiService"; // make sure this is at the top of main.ts
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
@@ -77,6 +78,17 @@ function setupUI(): void {
               class="w-full py-3 rounded-2xl bg-gradient-to-b from-red-400 to-red-500 text-white font-semibold shadow-md active:scale-[0.98] transition">
               Delete Category
             </button>
+
+
+
+
+            <button
+  type="button"
+  id="aiHelp"
+  class="w-full py-3 rounded-2xl bg-gradient-to-b from-purple-400 to-purple-500 text-white font-semibold shadow-md active:scale-[0.98] transition">
+  AI Help for a Task
+</button>
+
 
             <!-- iOS Select Menu -->
             <select
@@ -273,6 +285,57 @@ function setupEventListeners(): void {
           }
         ]
       })
+
+
+
+
+
+   // AI Help for a Task
+  const aiHelpButton = document.querySelector<HTMLButtonElement>('#aiHelp')
+  if (aiHelpButton) {
+    aiHelpButton.onclick = async () => {
+      // 1) Ask user which task they want help with
+      const result = await showFormModal({
+        title: 'AI Help for a Task',
+        message: 'Describe the task you want help accomplishing.',
+        confirmLabel: 'Get help',
+        cancelLabel: 'Cancel',
+        fields: [
+          {
+            name: 'task',
+            label: 'Task',
+            type: 'text',
+            placeholder: 'e.g. Study for my biology exam',
+            required: true,
+          },
+        ],
+      })
+
+      if (!result || !result.task?.trim()) {
+        return
+      }
+
+      const taskText = result.task.trim()
+
+      try {
+  const explanation = await getTaskHelpFromAI(taskText);
+
+  await showAlertModal({
+    title: 'How to accomplish this task',
+    message: explanation,
+  });
+} catch (err) {
+  console.error(err);
+  await showAlertModal({
+    title: "AI Error",
+    message: "Couldn't retrieve AI help. Please try again.",
+  });
+}
+
+
+    }
+  }
+
 
       if (!selection) return
 

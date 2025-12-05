@@ -1,6 +1,6 @@
 import type { Todo, Category, CreateTodoInput } from './todoModel'
 
-const API_BASE_URL = 'http://localhost:3000/api'
+const API_BASE_URL = 'http://localhost:3100/api'
 
 // Helper function for fetch requests
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
@@ -75,4 +75,22 @@ export async function deleteCategoryAPI(id: string): Promise<void> {
   return fetchJSON<void>(`${API_BASE_URL}/categories/${id}`, {
     method: 'DELETE',
   })
+}
+
+
+
+export async function getTaskHelpFromAI(task: string): Promise<string> {
+  const response = await fetch("http://localhost:3100/api/ai/help", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ task }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to get AI explanation");
+  }
+
+  return data.explanation;
 }

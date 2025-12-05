@@ -3,6 +3,8 @@ import cors from 'cors'
 import todoRoutes from './routes/todoRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import { initializeSeedData } from './models/todoStore.js'
+import aiRoutes from "./aiRoutes"; 
+
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -17,6 +19,8 @@ initializeSeedData()
 // Routes
 app.use('/api/todos', todoRoutes)
 app.use('/api/categories', categoryRoutes)
+app.use("/api/ai", aiRoutes);
+
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
