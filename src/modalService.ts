@@ -333,7 +333,7 @@ function openModal(options: BaseModalOptions & Partial<FormModalOptions>): Promi
 
       if (options.message) {
         const description = document.createElement("p")
-        description.className = "mt-2 text-sm text-slate-600"
+        description.className = "mt-2 text-sm text-slate-600 whitespace-pre-line max-h-[50vh] overflow-y-auto "
         description.textContent = options.message
         panel.appendChild(description)
       }
