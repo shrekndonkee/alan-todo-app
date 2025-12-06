@@ -1,18 +1,17 @@
 
-
 # 📦 Setup
 
 ## **Prerequisites**
 
-* Node.js (LTS)
-* npm
-* SQLite (bundled with Prisma)
-* **Ollama** installed locally
-* Pull the model:
+- Node.js (LTS)
+- npm
+- SQLite (bundled with Prisma)
+- **Ollama** installed locally
+- Pull the model:
 
 ```bash
 ollama pull llama3.2
-```
+````
 
 ---
 
@@ -30,7 +29,7 @@ Create a `.env` file in your project root:
 
 ```env
 # Database (Prisma uses this)
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="file:./prisma/dev.db"
 
 # Ollama AI configuration
 OLLAMA_BASE_URL=http://localhost:11434/v1
@@ -41,12 +40,17 @@ OLLAMA_MODEL=llama3.2
 
 ---
 
-## **3️⃣ Database Setup (if using Prisma migrations)**
+## **3️⃣ Database Setup**
+
+Generate your database and apply migrations:
 
 ```bash
 npx prisma migrate dev
-npx prisma db seed
 ```
+
+> **Note:**
+> A seed script is NOT required for this project.
+> You can add categories and todos directly through the UI.
 
 ---
 
@@ -107,10 +111,10 @@ POST /api/ai/help
 
 4. Backend sends the prompt to **Ollama** using model `llama3.2`
 5. AI responds with a friendly explanation
-6. Modal displays the result
+6. The modal displays the result
 
-> This feature **does not change the database**.
-> It only provides advice.
+> This feature **does not modify the database**.
+> It only provides advice and suggestions.
 
 ---
 
@@ -146,5 +150,4 @@ Backend is not running or incorrect port.
 
 Your backend must be running on **port 3100**.
 
----
 
